@@ -1,8 +1,9 @@
+import Header from "./_components/Header";
 
 export default function Home() {
   return (
     <div>
-      <h1>welcom back arbazz</h1>
+      <Header/>
     </div>
   );
 }
