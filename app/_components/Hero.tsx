@@ -1,5 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
+import { SignInButton } from '@clerk/nextjs'
 import { ArrowUp, HomeIcon, ImagePlus, Key, LayoutDashboard, User } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -40,7 +41,9 @@ function Hero() {
             />
             <div className='flex justify-between items-center'>
                 <Button variant={'ghost'} > <ImagePlus/> </Button>
-                <Button size={'icon'}> <ArrowUp/> </Button>
+                <SignInButton mode='modal' fallbackRedirectUrl={'/workspace'}>
+                <Button disabled={!userInput} size={'icon'}> <ArrowUp/> </Button>
+                </SignInButton>
             </div>
         </div>
 

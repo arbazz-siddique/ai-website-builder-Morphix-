@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
@@ -25,7 +26,7 @@ function Header() {
       </div>
         {/* Menu options */}
 
-        <div className='flex gap-5'>
+        <div className='flex gap-2'>
             {MenuOptions.map((menu, index)=>(
                 <Button variant={'ghost'} key={index}>{menu.name}</Button>
             ))}
@@ -33,8 +34,20 @@ function Header() {
 
         {/* get started button */}
         <div>
-            <Button>Get Started <ArrowRight/> </Button>
-        </div>
+        {/* If user is signed in → show UserButton */}
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+
+        {/* If user is not signed in → show Get Started */}
+        <SignedOut>
+          <SignInButton mode="modal" forceRedirectUrl={'/workspace'}>
+            <Button>
+              Get Started <ArrowRight />
+            </Button>
+          </SignInButton>
+        </SignedOut>
+      </div>
     </div>
   )
 }
