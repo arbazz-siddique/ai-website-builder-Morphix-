@@ -1,8 +1,12 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { SignInButton } from '@clerk/nextjs'
-import { ArrowUp, HomeIcon, ImagePlus, Key, LayoutDashboard, User } from 'lucide-react'
+import { SignInButton, useUser } from '@clerk/nextjs'
+import axios from 'axios'
+import { ArrowUp, HomeIcon, ImagePlus, Key, LayoutDashboard, LoaderCircle, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
+import {v4 as uuidv4} from 'uuid'
 
 const suggestions = [
     {label:'Dashboard', 
@@ -23,9 +27,43 @@ const suggestions = [
     },
 ]
 
+
 function Hero() {
 
     const [userInput, setUserInput] = useState<string>();
+    const {user} = useUser()
+    const router = useRouter()
+    const [loading, setLoading] = useState(false)
+
+    const CreateNewProject = async()=>{
+        setLoading(true)
+        const projectId = uuidv4()
+        const frameId = generateRandomFrameNumber()
+        const messages =[
+            {
+                role:'user',
+                content:userInput
+            }
+        ]
+        try {
+            const result = await axios.post('/api/projects',{
+                projectId:projectId,
+                frameId:frameId,
+                messages:messages
+            })
+            console.log(result.data)
+            toast.success("project created")
+            // navigate to playground
+            router.push(`/playground/${projectId}?frameId=${frameId}`)
+
+            setLoading(false)
+
+        } catch (error) {
+            toast.error("Internal server error")
+            console.log(error)
+            setLoading(false)
+        }
+    }
     
   return (
     <div className='flex flex-col items-center h-[80vh] justify-center'>
@@ -41,9 +79,17 @@ function Hero() {
             />
             <div className='flex justify-between items-center'>
                 <Button variant={'ghost'} > <ImagePlus/> </Button>
-                <SignInButton mode='modal' fallbackRedirectUrl={'/workspace'}>
+                {!user ? <SignInButton mode='modal' fallbackRedirectUrl={'/workspace'}>
                 <Button disabled={!userInput} size={'icon'}> <ArrowUp/> </Button>
                 </SignInButton>
+                :
+                <Button 
+                disabled={!userInput || loading}
+                 size={'icon'}
+                 onClick={CreateNewProject}
+                 > {loading ? <LoaderCircle className='animate-spin'/> : <ArrowUp/>} </Button>
+            }
+                
             </div>
         </div>
 
@@ -63,3 +109,8 @@ function Hero() {
 }
 
 export default Hero
+
+const generateRandomFrameNumber = ()=>{
+    const num = Math.floor(Math.random() * 10000)
+    return num
+}
