@@ -1,55 +1,62 @@
+'use client';
+
 import { Button } from '@/components/ui/button'
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
-
-const MenuOptions =[
-    {
-        name:"Pricing",
-        path:"/pricing"
-    },
-     {
-        name:"Contact Us",
-        path:"/contact-us"
-    }
+const MenuOptions = [
+  { name: "Pricing", path: "/pricing" },
+  { name: "Contact Us", path: "/contact-us" }
 ]
 
 function Header() {
-  return (
-    <div className='flex items-center justify-between p-4 shadow'>
-        {/* logo */}
-      <div className='flex gap-2 items-center'>
-          <Image src={'/logo.svg'} alt='logo' width={35} height={35}/>
-        <h2 className="text-2xl font-black ">Morphix</h2>
-      </div>
-        {/* Menu options */}
+  const { user } = useUser();
 
-        <div className='flex gap-2'>
-            {MenuOptions.map((menu, index)=>(
-                <Button variant={'ghost'} key={index}>{menu.name}</Button>
-            ))}
+  return (
+    <header className="w-full shadow-sm bg-white sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between px-4 py-3 md:px-8">
+        
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <Image src={'/logo.svg'} alt='logo' width={35} height={35} />
+          <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">Morphix</h2>
         </div>
 
-        {/* get started button */}
-        <div>
-        {/* If user is signed in → show UserButton */}
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
+        {/* Menu + Get Started Section */}
+        <div className="flex items-center gap-4 mt-3 md:mt-0 flex-wrap justify-center md:justify-end w-full md:w-auto">
+          
+          {/* Menu options */}
+          <nav className="flex gap-2 sm:gap-4 text-gray-700">
+            {MenuOptions.map((menu, index) => (
+              <Link key={index} href={menu.path}>
+                <Button variant="ghost" className="text-sm sm:text-base">
+                  {menu.name}
+                </Button>
+              </Link>
+            ))}
+          </nav>
 
-        {/* If user is not signed in → show Get Started */}
-        <SignedOut>
-          <SignInButton mode="modal" forceRedirectUrl={'/workspace'}>
-            <Button>
-              Get Started <ArrowRight />
-            </Button>
-          </SignInButton>
-        </SignedOut>
+          {/* Get Started button */}
+          {!user ? (
+            <SignInButton mode="modal" forceRedirectUrl={'/workspace'}>
+              <Button className="flex items-center gap-2 text-sm sm:text-base bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 transition">
+                Get Started <ArrowRight className="h-4 w-4" />
+              </Button>
+            </SignInButton>
+          ) : (
+            <Link href={'/workspace'}>
+              <Button className="flex items-center gap-2 text-sm sm:text-base bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 transition cursor-pointer">
+                Get Started <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   )
 }
 
-export default Header
+export default Header;
