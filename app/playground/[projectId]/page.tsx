@@ -154,7 +154,7 @@ function PlayGround() {
   const [generatedCode, setGeneratedCode] = useState<any>()
 
   useEffect(() => {
-    getFrameDetails();
+    frameId && getFrameDetails();
   }, [frameId]);
 
   const getFrameDetails = async () => {
@@ -166,6 +166,8 @@ function PlayGround() {
     if(result.data?.chatMessages?.length == 1){
       const userMsg = result.data?.chatMessages[0].content
       sendMessage(userMsg)
+    }else{
+      setMessages(result.data?.chatMessages)
     }
   };
 
@@ -226,8 +228,18 @@ function PlayGround() {
   }
 
   useEffect(()=>{
-    console.log(generatedCode)
-  },[generatedCode])
+    if(messages.length > 0){
+      saveMessages()
+    }
+  },[messages])
+
+  const saveMessages = async()=>{
+    const result = await axios.put('/api/chats',{
+      messages:messages,
+      frameId:frameId
+    })
+    console.log(result)
+  }
 
   return (
     <div>
