@@ -5,10 +5,11 @@ import { ArrowUp } from 'lucide-react'
 
 type Props={
     messages:Messages[],
-    onSend:any
+    onSend:any,
+    loading:boolean
 }
 
-function ChatSection({messages, onSend}:Props) {
+function ChatSection({messages, onSend, loading}:Props) {
     const [input, setInput] = useState<string>()
 
     const handleSend = ()=>{
@@ -28,12 +29,18 @@ function ChatSection({messages, onSend}:Props) {
             <div key={index} 
             className={`flex ${msg.role == 'user' ? 'justify-end': 'justify-start'}`} >
 
-                <div className={`p-2 rounded-lg max-w-[80%] ${msg.role == 'user'  ? 'bg-gray-100 text-black': 'bg-gray-500 text-black'}`}>
+                <div className={`p-2 rounded-lg max-w-[80%] ${msg.role == 'user'  ? 'bg-gray-100 text-black': 'bg-gray-200 text-black'}`}>
                     {msg.content}
                 </div>
             </div>
         ))
     )}
+    
+    {loading && <div className='flex justify-center items-center p-4'>
+        <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-700'></div>
+        <span className='ml-2 text-zinc-700'>Thinking....</span>
+    </div>
+    }
     </div>
 
         {/* fotter Input section  */}
@@ -44,7 +51,7 @@ function ChatSection({messages, onSend}:Props) {
             placeholder='Tell us your webiste desing idea.'
             onChange={(event)=>setInput(event.target.value)}
         />
-        <Button> <ArrowUp/> </Button>
+        <Button onClick={handleSend} > <ArrowUp/> </Button>
         </div>
     </div>
   )
