@@ -249,7 +249,7 @@ function PlayGround() {
         {/* chat section */}
         <ChatSection messages={messages ?? []} onSend={(input:string)=> sendMessage(input)} loading={loading} />
         {/* website design */}
-        <WebsiteDesign />
+        <WebsiteDesign  generatedCode={generatedCode?.replace('```','')} />
 
         {/* settings */}
         {/* <ElementSettingSection/> */}
