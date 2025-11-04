@@ -6,6 +6,7 @@ import WebsiteDesign from "../_components/WebsiteDesign";
 import ElementSettingSection from "../_components/ElementSettingSection";
 import { useParams, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { toast } from "sonner";
 
 export type Frame = {
   projectId: string;
@@ -55,8 +56,10 @@ Examples that REQUIRE HTML code:
 - Generate ONLY pure HTML code
 - NO markdown (no \`\`\`html or \`\`\`)
 - NO explanations before or after HTML
-- Start IMMEDIATELY with: <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-- End with: </body>
+- Start IMMEDIATELY with:
+  <main class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+- End with:
+  </main>
 - First character must be "<" and last must be ">"
 
 ### 📐 STRUCTURE:
@@ -99,12 +102,12 @@ Examples that REQUIRE HTML code:
 - Dark mode: \`dark:bg-gray-900 dark:text-white\`
 
 ### 📦 CHECKLIST:
-✅ Mobile responsive
-✅ Dark mode support
-✅ Smooth transitions
-✅ Semantic HTML
-✅ ARIA labels
-✅ No broken links (use #)
+✅ Mobile responsive  
+✅ Dark mode support  
+✅ Smooth transitions  
+✅ Semantic HTML  
+✅ ARIA labels  
+✅ No broken links (use #)  
 ✅ Descriptive alt text
 
 ---
@@ -114,7 +117,7 @@ Examples that REQUIRE HTML code:
 **OUTPUT FORMAT:**
 - Plain text ONLY
 - NO HTML tags at all
-- NO <body>, NO </body>
+- NO <main>, NO </main>
 - Just natural conversational text
 
 **Tone:**
@@ -135,13 +138,18 @@ Examples that REQUIRE HTML code:
 
 **YOUR TASK:**
 1. Determine if it's a BUILD request or CASUAL CHAT
-2. If BUILD → Output pure HTML starting with <body>
+2. If BUILD → Output pure HTML starting with <main>
 3. If CHAT → Output plain text (NO HTML tags)
 
 YOUR RESPONSE:
+YOUR RESPONSE:
+ONLY output valid HTML code when it is a build request.
+Do NOT describe what you are doing.
+Do NOT repeat instructions.
+If its a build request, start immediately with <main ...> and include complete responsive Tailwind HTML code.
+If its a chat, only reply in short plain text.
+Never output placeholders or comments like <!-- HTML code will be generated here -->.
 `;
-
-
 
 
 function PlayGround() {
@@ -163,6 +171,10 @@ function PlayGround() {
     );
     console.log(result);
     setFrameDetail(result.data);
+    const designCode = result.data?.designCode
+    const index = designCode.indexOf("```html")+7
+    const formatedCode = designCode.slice(index)
+    setGeneratedCode(formatedCode)
     if(result.data?.chatMessages?.length == 1){
       const userMsg = result.data?.chatMessages[0].content
       sendMessage(userMsg)
@@ -211,6 +223,7 @@ function PlayGround() {
       }
       
     }
+      await saveGeneratedCode(aiResponse)
     //After streaming end 
 
       if(!isCode){
@@ -224,6 +237,7 @@ function PlayGround() {
           {role:'assistant', content: 'Your code is ready.'}
         ])
       }
+   
     setLoading(false)
   }
 
@@ -239,6 +253,18 @@ function PlayGround() {
       frameId:frameId
     })
     console.log(result)
+  }
+
+
+
+  const saveGeneratedCode= async(code:string)=>{
+    const result = await axios.put('/api/frames',{
+      designCode:code,
+      frameId:frameId,
+      projectId:projectId
+    })
+    console.log(result.data)
+    toast.success('website is ready')
   }
 
   return (
