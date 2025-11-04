@@ -19,7 +19,7 @@ function ViewCodeBlock({children, code}:any) {
     }
   return (
     <Dialog>
-  <DialogTrigger>{children}</DialogTrigger>
+  <DialogTrigger asChild>{children}</DialogTrigger>
   <DialogContent className='min-w-7xl max-h-[650px] overflow-auto'>
     <DialogHeader>
       <DialogTitle> <div className='flex gap-5 items-center'>Source Code <Button className='hover:bg-blue-300 cursor-pointer' variant={'ghost'} onClick={handleCopy}> <Copy/> </Button> </div> </DialogTitle>
