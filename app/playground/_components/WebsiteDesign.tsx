@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import WebPageTools from "./WebPageTools";
 
 type Props = {
   generatedCode: string;
@@ -7,7 +8,7 @@ type Props = {
 function WebsiteDesign({ generatedCode }: Props) {
   
     const iframeRef = useRef<HTMLIFrameElement>(null);
-
+  const [selectedScreenSize, setSelectedScreenSize] = useState('desktop')
     // Initialize iframe shell once
     useEffect(() => {
         if (!iframeRef.current) return;
@@ -21,8 +22,8 @@ function WebsiteDesign({ generatedCode }: Props) {
       <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta name="description" content="AI Website Builder - Modern TailwindCSS + Flowbite Template">
-          <title>AI Website Builder</title>
+          <meta name="description" content="Morphix - Modern TailwindCSS + Flowbite Template">
+          <title>Morphix</title>
 
           <!-- Tailwind CSS -->
           <script src="https://cdn.tailwindcss.com"></script>
@@ -79,12 +80,13 @@ function WebsiteDesign({ generatedCode }: Props) {
     }, [generatedCode]);
 
     return (
-      <div className="p-5 w-full">
+      <div className="p-5 w-full flex items-center flex-col">
  <iframe
             ref={iframeRef}
-            className="w-full h-[700px] border rounded"
+            className={`${selectedScreenSize == 'desktop' ? 'w-full': 'w-100'}  h-[600px] border-2 rounded-xl`}
             sandbox="allow-scripts allow-same-origin"
         />
+        <WebPageTools selectedScreenSize={selectedScreenSize} setSelectedScreenSize={(v:string)=>setSelectedScreenSize(v)} generatedCode={generatedCode} />
       </div>
        
     );
