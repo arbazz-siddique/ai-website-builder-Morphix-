@@ -1,37 +1,35 @@
 'use client'
+import { OnSaveContext } from '@/context/OnSaveContext';
 import { UserDetailContext } from '@/context/UserDetailContext';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
-function Provider({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+function Provider({ children }: { children: React.ReactNode }) {
+  const { user, isLoaded } = useUser();
+  const [userDetail, setUserDetail] = useState<any>(null);
+  const [onSaveData, setOnSaveData] = useState<any>(null);
 
-    const {user} = useUser()
-    const [userDetail, setUserDetail] = useState<any>()
+  useEffect(() => {
+    if (isLoaded && user) createNewUser();
+  }, [isLoaded, user]);
 
-    useEffect(()=>{
-        user && createNewUser()
-    },[user])
-
-    const createNewUser = async()=>{
-        const result = await axios.post('/api/users',{
-
-        })
-        // console.log(result.data)
-        setUserDetail(result.data?.user)
+  const createNewUser = async () => {
+    try {
+      const result = await axios.post('/api/users', {});
+      setUserDetail(result.data?.user);
+    } catch (err) {
+      console.error('Error creating user:', err);
     }
+  };
 
   return (
-    <div>
-      <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
-{children }
-</UserDetailContext.Provider>
-    </div>
-  )
+    <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+      <OnSaveContext.Provider value={{ onSaveData, setOnSaveData }}>
+        {children}
+      </OnSaveContext.Provider>
+    </UserDetailContext.Provider>
+  );
 }
 
-export default Provider
+export default Provider;

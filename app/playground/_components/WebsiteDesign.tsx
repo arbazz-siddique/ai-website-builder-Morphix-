@@ -1,7 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import WebPageTools from "./WebPageTools";
 import ElementSettingSection from "./ElementSettingSection";
 import ImageSettingSection from "./ImageSettingSection";
+import { OnSaveContext } from "@/context/OnSaveContext";
+import axios from "axios";
+import { toast } from "sonner";
+import { useParams, useSearchParams } from "next/navigation";
 
 type Props = {
   generatedCode: string;
@@ -39,6 +43,10 @@ function WebsiteDesign({ generatedCode }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selectedScreenSize, setSelectedScreenSize] = useState("desktop");
   const [selectedElement, setSelectedElement] = useState<HTMLElement | null>();
+    const {onSaveData, setOnSaveData} = useContext(OnSaveContext)
+     const { projectId } = useParams();
+      const params = useSearchParams();
+      const frameId = params.get("frameId");
 
   useEffect(() => {
     if (!iframeRef.current) return;
@@ -144,13 +152,42 @@ function WebsiteDesign({ generatedCode }: Props) {
     }
   }, [generatedCode]);
 
-  const getIframeHTML = () => {
-    if (!iframeRef.current) return "";
-    const doc = iframeRef.current.contentDocument;
-    if (!doc) return "";
-    const main = doc.querySelector("main");
-    return main ? main.innerHTML : "";
-  };
+useEffect(()=>{
+  onSaveData && onSavedCode()
+},[onSaveData])
+
+const onSavedCode = async()=>{
+  if(iframeRef.current){
+    try {
+      const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document
+      if(iframeDoc){
+        const colneDoc = iframeDoc.documentElement.cloneNode(true) as HTMLElement
+        const AllEls = colneDoc.querySelectorAll<HTMLElement>("*")
+        AllEls.forEach((el)=>{
+          el.style.outline='';
+          el.style.cursor='';
+        })
+        const html = colneDoc.outerHTML;
+        
+      const result = await axios.put('/api/frames',{
+      designCode:html,
+      frameId:frameId,
+      projectId:projectId
+    })
+   
+    toast.success('Code Saved')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+const getIframeHTML = () => {
+  if (!iframeRef.current) return "";
+  const doc = iframeRef.current.contentDocument;
+  if (!doc) return "";
+  return doc.body.innerHTML; // Get the live edited content
+};
 
   return (
     <div className="flex gap-2 w-full">
