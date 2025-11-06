@@ -10,7 +10,7 @@ function PlaygroundHeader() {
   return (
     <div className='flex justify-between items-center p-4 shadow'>
       <Link href={"/"}>
-      <Image src={'/logo.svg'} alt='logo' width={40} height={40} />
+      <Image src={'/logo.svg'} alt='logo' width={40} height={40} className='rounded-full' />
       </Link>
         
         <Button

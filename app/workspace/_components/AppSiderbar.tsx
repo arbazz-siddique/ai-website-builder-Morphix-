@@ -39,7 +39,10 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
-            <Image src={'/logo.svg'} alt="logo" width={35} height={35} />
+          <Link href={'/'}>
+          
+            <Image src={'/logo.svg'} alt="logo" width={35} height={35} className="rounded-full" />
+          </Link>
             <h2 className="font-bold text-2xl">Morphix</h2>
         </div>
         <Link href={'/workspace'} className="mt-5 w-full">

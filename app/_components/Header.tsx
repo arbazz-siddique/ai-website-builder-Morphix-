@@ -21,7 +21,7 @@ function Header() {
         
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Image src={'/logo.svg'} alt='logo' width={35} height={35} />
+          <Image src={'/logo.svg'} alt='logo' width={35} height={35} className='rounded-full' />
           <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">Morphix</h2>
         </div>
 
